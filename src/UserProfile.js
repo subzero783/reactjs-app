@@ -1,40 +1,34 @@
-import React from "react"; // Import React (needed for JSX)
+import React from "react";
 
 // Define the UserProfile functional component
-// It accepts 'props' as an argument (an object containing passed data)
-function UserProfile(props) {
-  // --- JavaScript Logic ---
-  // We can write regular JavaScript here before the return statement.
-  // Example: Combine first and last name from props
-  const fullName = props.firstName + " " + props.lastName;
+// We use object destructuring directly in the function parameters
+// to extract the specific props we expect ({ name, email, age }).
+function UserProfile({ name, email, age }) {
+  // Now we can use name, email, and age directly as variables
+  // instead of props.name, props.email, etc.
 
-  // --- JSX Return ---
-  // The component returns a description of the UI using JSX.
-  // It must return a single root element (here, it's the div).
+  // Basic inline styles for the card
+  const cardStyle = {
+    border: "1px solid #ccc",
+    margin: "10px",
+    padding: "10px",
+    borderRadius: "5px",
+    backgroundColor: "#f9f9f9",
+  };
+
   return (
-    // Use className for CSS classes (maps to HTML 'class')
     <div
-      className="profile-card"
-      style={{ border: "1px solid #eee", padding: "15px", margin: "10px", borderRadius: "8px", textAlign: "center" }}
+      className="user-card"
+      style={cardStyle}
     >
-      {/* This is a JSX comment */}
-      {/* User Avatar Image */}
-      <img
-        // Use curly braces {} to embed JavaScript expressions (like variables) as prop values
-        src={props.avatarUrl}
-        // String literals can be passed in quotes
-        alt={"Avatar for " + fullName} // Can also use expressions in strings within {}
-        className="profile-avatar" // Use className, not class
-        style={{ width: "80px", height: "80px", borderRadius: "50%", marginBottom: "10px" }}
-      />{" "}
-      {/* Self-closing tag for elements with no children */}
-      {/* Embed the fullName variable */}
-      <h2>{fullName}</h2>
-      {/* Embed the email prop */}
-      <p>Email: {props.email}</p>
-    </div> // End of the single root element
+      {/* Use the destructured variables directly in JSX */}
+      <h2>Name: {name}</h2>
+      <p>Email: {email}</p>
+      {/* Conditionally render Age only if it's provided and not null/0 */}
+      {age ? <p>Age: {age}</p> : <p>Age: Not specified</p>}
+    </div>
   );
 }
 
-// Export the component to make it available for import in other files
+// Export the component
 export default UserProfile;
