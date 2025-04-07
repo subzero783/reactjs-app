@@ -1,116 +1,145 @@
 import { useState, useEffect } from "react";
-import "./App.css"; // Import basic styles
+import TodoItem from "./TodoItem"; // Import the child component
+import "./App.css"; // Import styles
 
 function App() {
-  // State for the original list of posts fetched from API
-  const [posts, setPosts] = useState([]);
-  // State for loading status
-  const [isLoading, setIsLoading] = useState(true);
-  // State for any fetching errors
-  const [error, setError] = useState(null);
-  // State for the user's filter input
-  const [searchTerm, setSearchTerm] = useState("");
+  // --- State ---
+  // Initialize state from localStorage if available, otherwise use default todos
+  const [todos, setTodos] = useState(() => {
+    const savedTodos = localStorage.getItem("reactTodos"); // Key for localStorage
+    try {
+      // Parse saved JSON or return default array if nothing saved or parsing fails
+      return savedTodos
+        ? JSON.parse(savedTodos)
+        : [
+            { id: 1, text: "Learn React Basics", completed: true },
+            { id: 2, text: "Build To-do App", completed: false },
+            { id: 3, text: "Add Styling", completed: false },
+          ];
+    } catch (e) {
+      // Handle potential errors during JSON parsing
+      console.error("Failed to parse saved todos from localStorage", e);
+      // Fallback to default todos if parsing fails
+      return [
+        { id: 1, text: "Learn React Basics", completed: true },
+        { id: 2, text: "Build To-do App", completed: false },
+        { id: 3, text: "Add Styling", completed: false },
+      ];
+    }
+  });
 
-  // Fetch data when the component mounts
+  // State for the new todo input field
+  const [newTodoText, setNewTodoText] = useState("");
+
+  // --- Side Effect ---
+  // Save todos to localStorage whenever the 'todos' state array changes
   useEffect(() => {
-    console.log("Attempting to fetch posts...");
-    setIsLoading(true); // Indicate loading started
-    setError(null); // Clear any previous errors
+    console.log("Saving todos to localStorage");
+    // Convert the todos array to a JSON string and save it
+    localStorage.setItem("reactTodos", JSON.stringify(todos));
+    // Dependency array: this effect runs only when the 'todos' state changes
+  }, [todos]);
 
-    // Fetching posts from JSONPlaceholder API
-    fetch("https://jsonplaceholder.typicode.com/posts")
-      .then((response) => {
-        // Check if the HTTP response status is OK (e.g., 200)
-        if (!response.ok) {
-          // If not okay, construct an error message and throw it
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        // If okay, parse the response body as JSON
-        return response.json();
-      })
-      .then((data) => {
-        // On successful data retrieval, update the posts state
-        setPosts(data);
-        console.log("Posts fetched successfully:", data.length);
-      })
-      .catch((error) => {
-        // If any error occurred during fetch or parsing
-        console.error("Error fetching posts:", error);
-        setError(error.message); // Store the error message in state
-      })
-      .finally(() => {
-        // This block executes regardless of success or failure
-        setIsLoading(false); // Indicate loading has finished
-        console.log("Fetch attempt complete.");
-      });
+  // --- Event Handlers ---
 
-    // The empty dependency array ensures this effect runs only once on mount
-  }, []);
-
-  // Handler function to update the search term state as the user types
-  function handleFilterChange(event) {
-    setSearchTerm(event.target.value);
+  // Update input field state as user types
+  function handleInputChange(event) {
+    setNewTodoText(event.target.value);
   }
 
-  // Filter the posts based on the current search term BEFORE rendering the list
-  // This filtering happens on every render where searchTerm might have changed
-  const filteredPosts = posts.filter((post) =>
-    // Check if the post title (lowercase) includes the search term (lowercase)
-    post.title.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Add a new todo item to the list
+  function handleAddTodo(event) {
+    event.preventDefault(); // Prevent default form submission behavior (page reload)
+    const trimmedText = newTodoText.trim(); // Remove leading/trailing whitespace
 
-  // --- Determine Content Based on State ---
-  let content;
-  if (isLoading) {
-    // Display loading message
-    content = <p className="loading">Loading posts, please wait...</p>;
-  } else if (error) {
-    // Display error message
-    content = <p className="error">Error loading posts: {error}</p>;
-  } else {
-    // Display the filtered list or a message if the list/filter is empty
-    content = (
-      <ul className="post-list">
-        {/* Check if the filtered list has items */}
-        {filteredPosts.length > 0 ? (
-          // If yes, map over filtered posts
-          filteredPosts.map((post) => (
-            // Render each post item with a unique key
-            <li
-              key={post.id}
-              className="post-item"
-            >
-              <h3>{post.title}</h3>
-              <p>{post.body}</p>
-            </li>
-          ))
-        ) : (
-          // If no posts match the filter (or if initial list was empty)
-          <p>No posts found{searchTerm ? " matching your filter" : ""}.</p>
-        )}
-      </ul>
+    // Don't add empty todos
+    if (trimmedText === "") {
+      alert("Please enter a task description.");
+      return;
+    }
+
+    // Create the new todo object
+    const newTodo = {
+      id: Date.now(), // Use timestamp for a simple unique ID in this demo
+      text: trimmedText,
+      completed: false, // New todos start as not completed
+    };
+
+    // Update the todos state IMMUTABLY
+    // Create a new array with all previous todos spread (...) plus the new one
+    setTodos((prevTodos) => [...prevTodos, newTodo]);
+
+    // Clear the input field after adding
+    setNewTodoText("");
+    console.log("Added new todo:", newTodo);
+  }
+
+  // Delete a todo item by its ID
+  function handleDeleteTodo(idToDelete) {
+    console.log("Deleting todo with ID:", idToDelete);
+    // Update state IMMUTABLY by filtering out the deleted item
+    // Create a new array containing only todos whose ID does NOT match idToDelete
+    setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== idToDelete));
+  }
+
+  // Toggle the completed status of a todo item by its ID
+  function handleToggleComplete(idToToggle) {
+    console.log("Toggling complete for ID:", idToToggle);
+    // Update state IMMUTABLY using map
+    setTodos((prevTodos) =>
+      // Create a new array by mapping over the previous todos
+      prevTodos.map((todo) => {
+        // If this is the todo we want to toggle...
+        if (todo.id === idToToggle) {
+          // ...return a NEW object spreading the old todo's properties (...)
+          // but with the 'completed' status flipped (!todo.completed)
+          return { ...todo, completed: !todo.completed };
+        } else {
+          // ...otherwise, return the original todo object unchanged
+          return todo;
+        }
+      })
     );
   }
 
-  // --- Render the Main App Structure ---
+  // --- Render Logic ---
+  console.log("Rendering App. Number of todos:", todos.length);
   return (
     <div className="App">
-      <h1>Blog Posts</h1>
+      <h1>React To-do List</h1>
 
-      {/* Filter Input Section */}
-      <div className="filter-container">
-        <label htmlFor="filterInput">Filter by title: </label>
+      {/* Form for adding new todos */}
+      <form
+        onSubmit={handleAddTodo}
+        className="add-todo-form"
+      >
         <input
-          id="filterInput"
           type="text"
-          placeholder="Enter search term..."
-          value={searchTerm} // Controlled input value
-          onChange={handleFilterChange} // Update state on change
+          placeholder="Add a new task..."
+          value={newTodoText} // Controlled input: value linked to state
+          onChange={handleInputChange} // Update state on change
+          aria-label="New todo text"
         />
-      </div>
+        <button type="submit">Add Todo</button>
+      </form>
 
-      {/* Content Area (displays loading, error, or list) */}
-      <div className="content-area">{content}</div>
+      {/* List of todo items */}
+      <ul className="todo-list">
+        {/* Conditional rendering: Show message if list is empty */}
+        {todos.length === 0 ? (
+          <p className="empty-message">Your to-do list is empty!</p>
+        ) : (
+          // Map over the todos array to render each item using TodoItem component
+          todos.map((todo) => (
+            <TodoItem
+              key={todo.id} // Essential unique key prop for list items
+              todo={todo} // Pass the entire todo data object as a prop
+              onToggleComplete={handleToggleComplete} // Pass the toggle handler function as a prop
+              onDelete={handleDeleteTodo} // Pass the delete handler function as a prop
+            />
+          ))
+        )}
+      </ul>
     </div>
   );
 }
