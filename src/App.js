@@ -1,63 +1,47 @@
 import { useState } from "react";
 // Import the components
-import LoginControl from "./ButtonComponents/LoginControl";
-import Mailbox from "./Mailbox";
-import WarningBanner from "./WarningBanner";
-// import './App.css'; // Optional CSS import
+import MyComponent from "./MyComponent"; // Uses MyComponent.css implicitly via its own import
+import InlineStyledComponent from "./InlineStyledComponent";
+import ModularButton from "./ModularButton"; // Uses Button.module.css implicitly
+import ConditionalStyle from "./ConditionalStyle"; // Uses ConditionalStyle.css implicitly
+
+// Import global App styles if needed
+// import './App.css';
 
 // Define the main App component
 function App() {
-  // State to control the Mailbox messages
-  const [messages, setMessages] = useState(["React update", "Meeting reminder"]);
-  // State to control the WarningBanner visibility
-  const [showWarning, setShowWarning] = useState(true);
-
-  // Handler to simulate adding a message
-  const addMessage = () => {
-    setMessages((prev) => [...prev, `New message #${prev.length + 1}`]);
-  };
-
-  // Handler to simulate clearing messages
-  const clearMessages = () => {
-    setMessages([]);
-  };
-
-  // Handler to toggle the warning banner
-  const toggleWarning = () => {
-    setShowWarning((prev) => !prev);
-  };
+  // State for the ConditionalStyle component example
+  const [isConditionalActive, setIsConditionalActive] = useState(false);
 
   return (
     <div /* className="App" */ style={{ fontFamily: "sans-serif", padding: "10px" }}>
       <header style={{ backgroundColor: "#282c34", padding: "10px", color: "white", textAlign: "center", marginBottom: "20px" }}>
-        <h1>Lesson 13: Conditional Rendering Examples</h1>
+        <h1>Lesson 15: Styling Examples</h1>
       </header>
 
       <main>
-        {/* --- Example 1: Login Control (Ternary) --- */}
-        {/* LoginControl manages its own state internally */}
-        <LoginControl />
-        <hr style={{ margin: "30px 0" }} />
+        {/* --- Example 1: Plain CSS --- */}
+        <MyComponent />
+        <hr style={{ margin: "20px 0" }} />
 
-        {/* --- Example 2: Mailbox (&&) --- */}
+        {/* --- Example 2: Inline Styles --- */}
+        <InlineStyledComponent />
+        <hr style={{ margin: "20px 0" }} />
+
+        {/* --- Example 3: CSS Modules --- */}
+        <ModularButton />
+        <hr style={{ margin: "20px 0" }} />
+
+        {/* --- Example 4: Conditional Styling --- */}
         <div>
           <button
-            onClick={addMessage}
-            style={{ marginRight: "5px" }}
+            onClick={() => setIsConditionalActive((a) => !a)}
+            style={{ marginBottom: "10px" }}
           >
-            Add Message
+            Toggle 'isActive' Prop for ConditionalStyle Component
           </button>
-          <button onClick={clearMessages}>Clear Messages</button>
-          {/* Pass the messages array state as a prop */}
-          <Mailbox unreadMessages={messages} />
-        </div>
-        <hr style={{ margin: "30px 0" }} />
-
-        {/* --- Example 3: Warning Banner (null) --- */}
-        <div>
-          <button onClick={toggleWarning}>{showWarning ? "Hide Warning" : "Show Warning"}</button>
-          {/* Pass the showWarning state as a prop */}
-          <WarningBanner showWarning={showWarning} />
+          {/* Pass the state down as a prop */}
+          <ConditionalStyle initialActive={isConditionalActive} />
         </div>
       </main>
     </div>

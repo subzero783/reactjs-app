@@ -1,0 +1,19 @@
+/* MyComponent.css */
+/* These styles are global by default unless your build setup configures scoping */
+/* or you use a naming convention like BEM */
+
+.infoBox {
+  padding: 15px;
+  margin: 10px 0; /* Added margin for spacing when used in App */
+  border: 1px solid steelblue;
+  background-color: lightblue;
+  border-radius: 5px;
+  color: navy;
+  font-family: sans-serif; /* Added for basic font consistency */
+}
+
+/* Modifier class to make the text larger and bolder */
+.infoBox--large {
+  font-size: 1.2em;
+  font-weight: bold;
+}

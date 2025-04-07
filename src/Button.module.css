@@ -1,0 +1,36 @@
+/* Button.module.css */
+/* Class names defined here are locally scoped by default */
+/* The build tool will transform .errorButton into something like Button_errorButton__XYZ12 */
+
+.errorButton {
+  background-color: crimson;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  font-family: sans-serif; /* Added for basic font consistency */
+  margin: 5px; /* Added margin for spacing */
+}
+
+/* Pseudo-classes work as expected and are also scoped */
+.errorButton:hover {
+  background-color: darkred;
+}
+
+/* Example of another class in the same module */
+.successButton {
+  background-color: mediumseagreen;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-family: sans-serif; /* Added for basic font consistency */
+  margin: 5px; /* Added margin for spacing */
+}
+
+.successButton:hover {
+  background-color: seagreen;
+}
