@@ -10,7 +10,7 @@ This course provides a foundational understanding of ReactJS, covering essential
 
 This repository uses branches to separate the starting code and completed code for each relevant lesson and project.
 
-- **`main`**: May contain the final state of the last project or a base setup.
+- **`main`**: Contains the base setup.
 - **`lesson-X`**: Contains the starting code or state _before_ the concepts of Lesson X are applied.
 - **`lesson-X-completed`**: Contains the completed code _after_ the concepts of Lesson X have been implemented.
 - **`project-X-<name>`**: Contains the starting code for Project X.
