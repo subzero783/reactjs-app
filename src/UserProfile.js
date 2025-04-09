@@ -1,5 +1,3 @@
-import React from "react"; // Import React (needed for JSX)
-
 // Define the UserProfile functional component
 // It accepts 'props' as an argument (an object containing passed data)
 function UserProfile(props) {
